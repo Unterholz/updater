@@ -22,7 +22,7 @@ for var in "${REQUIRED_VARS[@]}"; do
   esac
 done
 
-ssh "$USER@$NODE" << EOF
+ssh "$USER@$NODE" <<EOF
   #  stop the service
   systemctl stop couchbase-server.service
 
@@ -43,6 +43,10 @@ ssh "$USER@$NODE" << EOF
 
   #  restart the service
   systemctl start couchbase-server.service
+
+  # Reload the certificates before adding back the node to the cluster
+  curl -X POST $NODE:8091/node/controller/loadTrustedCAs
+  curl -X POST $NODE:8091/node/controller/reloadCertificate
 
   #  remove the local package fron the fs
   rm -f ./couchbase-server-enterprise-$TARGET-linux.x86_64.rpm

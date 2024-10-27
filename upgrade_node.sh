@@ -29,7 +29,7 @@ systemctl stop couchbase-server.service
 #  remove the package
 yum autoremove couchbase-server -y
 #  remove current configuration
-rm -r /opt/couchbase
+# rm -r /opt/couchbase
 # get the target package version
 curl -O https://packages.couchbase.com/releases/$TARGET/couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
 #  install the target package
@@ -39,3 +39,6 @@ systemctl daemon-reload
 
 #  restart the service
 systemctl start couchbase-server.service
+
+#  remove the local package fron the fs
+rm -f ./couchbase-server-enterprise-$TARGET-linux.x86_64.rpm

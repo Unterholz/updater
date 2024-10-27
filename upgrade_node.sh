@@ -10,7 +10,7 @@
 # ================================================
 
 # Check all of required environment variables
-REQUIRED_VARS=("NODE" "TARGET")
+REQUIRED_VARS=("NODE" "USER" "TARGET")
 
 for var in "${REQUIRED_VARS[@]}"; do
   case "${!var}" in
@@ -22,23 +22,28 @@ for var in "${REQUIRED_VARS[@]}"; do
   esac
 done
 
-# replace this with Viseca's actual upgrade script
+ssh "$USER@$NODE" << EOF
+  #  stop the service
+  systemctl stop couchbase-server.service
 
-#  stop the service
-systemctl stop couchbase-server.service
-#  remove the package
-yum autoremove couchbase-server -y
-#  remove current configuration
-# rm -r /opt/couchbase
-# get the target package version
-curl -O https://packages.couchbase.com/releases/$TARGET/couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
-#  install the target package
-yum install -y ./couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
+  #  remove the package
+  yum autoremove couchbase-server -y
 
-systemctl daemon-reload
+  #  remove current configuration
+  rm -fr /opt/couchbase
 
-#  restart the service
-systemctl start couchbase-server.service
+  # get the target package version
+  curl -O https://packages.couchbase.com/releases/$TARGET/couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
 
-#  remove the local package fron the fs
-rm -f ./couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
+  #  install the target package
+  yum install -y ./couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
+
+  # reload
+  systemctl daemon-reload
+
+  #  restart the service
+  systemctl start couchbase-server.service
+
+  #  remove the local package fron the fs
+  rm -f ./couchbase-server-enterprise-$TARGET-linux.x86_64.rpm
+EOF

@@ -86,12 +86,12 @@ for CURRENT in "${NODES[@]}"; do
   echo "Upgrading $CURRENT"
   # invoke real upgrade script here
 
-  TARGET=$TARGET NODE=$CURRENT ./upgrade_node.sh
+  # TARGET=$TARGET NODE=$CURRENT ./upgrade_node.sh
+  warn "Sleeping for 10secs to simulate node upgrade."
+  sleep 10
 
   if [ $? -eq 0 ]; then
     echo "Node $CURRENT upgraded successfully."
-    # warn "Sleeping for 10secs to simulate node upgrade."
-    # sleep 10
   else
     echo "Failed to upgrade node $CURRENT."
     exit 1
